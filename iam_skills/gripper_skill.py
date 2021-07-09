@@ -59,7 +59,7 @@ class BaseGripperSkill(BaseSkill):
 class OpenGripperSkill(BaseGripperSkill):
 
     def make_policy(self, state, param):
-        return OneStepGripperPolicy(open_griper=True)
+        return OneStepGripperPolicy(open_gripper=True)
 
 
 class CloseGripperSkill(BaseGripperSkill):
