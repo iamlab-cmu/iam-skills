@@ -1,17 +1,14 @@
 from abc import abstractmethod
 from typing import List
-from enum import Enum
+
 from pillar_skills import BaseSkill, BasePolicy
 
-
-class StreamCmdType(Enum):
-    EE=0
-    JOINT=1
+from .cmd_type import CmdType
 
 
 class StreamTrajPolicy(BasePolicy):
 
-    def __init__(self, traj: List, dt: float, cmd_type: StreamCmdType):
+    def __init__(self, traj: List, dt: float, cmd_type: CmdType):
         self._traj = traj
         self._dt = dt
         self._cmd_type = cmd_type
@@ -30,12 +27,13 @@ class StreamTrajPolicy(BasePolicy):
     def horizon(self):
         return len(self._traj)
 
+    def get_traj_item(self, t_step):
+        t = min(t_step, len(self._traj))
+        return self._traj[t]
+
     def __call__(self, state):
-        t = min(self._t_step, len(self._traj))
-        item = self._traj[t]
-
+        item = self.get_traj_item(self._t_step)
         self._t_step += 1
-
         return item
 
 
