@@ -12,9 +12,9 @@ class MotionPlanningSkill(BaseStreamTrajSkill):
     def make_policy(self, state, param):
         param_dict=json.loads(param):
         ref_postion=state[param_dict["ref_obj"]+"/position"]
-        ref_oreientation=state[param_dict["ref_obj"]+"/quaternion"]
+        ref_orientation=state[param_dict["ref_obj"]+"/quaternion"]
         
-        goal_pose=ref_postion+ref_oreientation
+        goal_pose=ref_postion+ref_orientation
         # call the motion planner and return a StreamTrajPolicy
         motion_planner = IAMMotionPlanner(self._cfg)
         start = state
