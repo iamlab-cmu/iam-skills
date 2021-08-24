@@ -5,19 +5,33 @@ from pillar_skills import BaseSkill, BasePolicy
 from .cmd_type import CmdType
 
 
-class OneStepForcePolicy(BasePolicy):
+class ForcePolicy(BasePolicy):
 
-    def __init__(self, duration=None, record=None, block=None):
+    def __init__(self, duration: float, dt: float, record: bool):
+        self._duration = duration
+        self._dt = dt
+        self._record = record
+        self._horizon = int(duration / dt)
 
-        self._force_cmd = {
-            'duration': duration,
-            'record': record,
-            'block': block
-        }
+    @property
+    def dt(self):
+        return self._dt
 
     @property
     def cmd_type(self):
         return CmdType.FORCE
+
+    @property
+    def duration(self):
+        return self._duration
+
+    @property
+    def horizon(self):
+        return self._horizon
+
+    @property
+    def record(self):
+        return self._record
 
     def __call__(self, state):
         return self._force_cmd
@@ -32,7 +46,7 @@ class BaseForceSkill(BaseSkill):
         return 1
 
     def termination_condition_satisfied(self, state, param, policy, t_step):
-        if t_step >= 1:
+        if t_step >= policy.horizon:
             return 1
         return 0
 
@@ -43,7 +57,7 @@ class BaseForceSkill(BaseSkill):
         raise NotImplementedError()
 
     @abstractmethod
-    def make_policy(self, state, param) -> OneStepForcePolicy:
+    def make_policy(self, state, param) -> ForcePolicy:
         pass
 
 
@@ -51,12 +65,12 @@ class RecordSkill(BaseForceSkill):
 
     def make_policy(self, state, param):
         param_dict = json.loads(param)
-        return OneStepForcePolicy(duration=param_dict['duration'], record=True, block=False)
+        return ForcePolicy(duration=param_dict['duration'], dt=param_dict['dt'], record=True)
 
 
 class ZeroForceSkill(BaseForceSkill):
 
     def make_policy(self, state, param):
         param_dict = json.loads(param)
-        return OneStepForcePolicy(duration=param_dict['duration'], record=False, block=True)
+        return ForcePolicy(duration=param_dict['duration'], dt=param_dict['dt'], record=False)
 
