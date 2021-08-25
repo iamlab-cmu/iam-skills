@@ -9,10 +9,10 @@ from .cmd_type import CmdType
 class OneStepJointPolicy(BasePolicy):
 
     def __init__(self, duration: float, dt: float, goal_joints: list):
-        self._duration = duration + 1
+        self._duration = duration
         self._dt = dt
         self._goal_joints = goal_joints
-        self._horizon = int(duration / dt)
+        self._horizon = int((duration + 1) / dt)
 
     @property
     def dt(self):
