@@ -6,12 +6,12 @@ from pillar_skills import BaseSkill, BasePolicy
 from .cmd_type import CmdType
 
 
-class ForcePolicy(BasePolicy):
+class OneStepJointPolicy(BasePolicy):
 
-    def __init__(self, duration: float, dt: float, record: bool):
-        self._duration = duration
+    def __init__(self, duration: float, dt: float, goal_joints: list):
+        self._duration = duration + 1
         self._dt = dt
-        self._record = record
+        self._goal_joints = goal_joints
         self._horizon = int(duration / dt)
 
     @property
@@ -20,7 +20,7 @@ class ForcePolicy(BasePolicy):
 
     @property
     def cmd_type(self):
-        return CmdType.FORCE
+        return CmdType.ONESTEPJOINT
 
     @property
     def duration(self):
@@ -31,14 +31,14 @@ class ForcePolicy(BasePolicy):
         return self._horizon
 
     @property
-    def record(self):
-        return self._record
+    def goal_joints(self):
+        return self._goal_joints
 
     def __call__(self, state):
-        return self._force_cmd
+        return self._goal_joints
 
 
-class BaseForceSkill(BaseSkill):
+class BaseOneStepJointSkill(BaseSkill):
 
     def precondition_satisfied_for_state(self, state):
         return 1
@@ -58,20 +58,12 @@ class BaseForceSkill(BaseSkill):
         raise NotImplementedError()
 
     @abstractmethod
-    def make_policy(self, state, param) -> ForcePolicy:
+    def make_policy(self, state, param) -> OneStepJointPolicy:
         pass
 
 
-class RecordSkill(BaseForceSkill):
+class GoToJointsSkill(BaseOneStepJointSkill):
 
     def make_policy(self, state, param):
         param_dict = json.loads(param)
-        return ForcePolicy(duration=param_dict['duration'], dt=param_dict['dt'], record=True)
-
-
-class ZeroForceSkill(BaseForceSkill):
-
-    def make_policy(self, state, param):
-        param_dict = json.loads(param)
-        return ForcePolicy(duration=param_dict['duration'], dt=param_dict['dt'], record=False)
-
+        return OneStepJointPolicy(duration=param_dict['duration'], dt=param_dict['dt'], goal_joints=param_dict['goal_joints'])
