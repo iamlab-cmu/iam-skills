@@ -7,3 +7,4 @@ class CmdType(Enum):
     GRIPPER=2
     FORCE=3
     ONESTEPJOINT=4
+    ONESTEPPOSE=5
