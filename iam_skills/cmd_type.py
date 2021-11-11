@@ -8,3 +8,4 @@ class CmdType(Enum):
     FORCE=3
     ONESTEPJOINT=4
     ONESTEPPOSE=5
+    ONESTEPJOINTDMP=6
